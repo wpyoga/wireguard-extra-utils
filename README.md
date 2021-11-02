@@ -20,3 +20,11 @@ This depends on `wg-dir`. The files `wg-quick-auto-restart@.path` and `wg-quick-
 # systemctl enable --now wg-quick-auto-restart@my-mesh.path
 ```
 
+## TODO
+
+Maybe check for invalid syntax before overwriting the config file.
+
+## License
+
+This project is licensed under the GNU GPL v2, in accordance with the [wireguard-tools](https://git.zx2c4.com/wireguard-tools) project.
+

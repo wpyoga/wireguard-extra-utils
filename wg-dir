@@ -1,0 +1,73 @@
+#!/bin/sh
+
+set -e
+
+# Given a directory
+# - look for regular files inside it
+# - ignore files whose name starts with a dot
+# - sort the list of files
+# - concatenate everything
+
+WIREGUARD_DIR="/etc/wireguard"
+
+if [ $# -ne 1 ]; then
+  cat >/dev/stderr <<EOF
+Usage: $0 [CONFIG_DIR]
+
+Read WireGuard configuration info from CONFIG_DIR, then generate a config file
+suitable for use by wg-quick.
+
+If CONFIG_DIR starts with a slash, then it is treated as an absolute path. The
+generated config file name is CONFIG_DIR + \`.conf'.
+
+Otherwise, it is treated as a directory name inside \`/etc/wireguard'. The
+generated config file name is \`/etc/wireguard/' + CONFIG_DIR + \`.conf'.
+
+Any existing config file will be overwritten, and its permissions preserved,
+unless an error occurred. If the config file did not exist previously, the
+permission is subject to \`umask'.
+EOF
+  exit 1
+fi
+
+CONFIG_DIR=$(printf %s "$1" | tr -s /)
+CONFIG_DIR=${DIR%/}
+
+if [ -z "${CONFIG_DIR}" ]; then
+  echo "CONFIG_DIR cannot be an empty string." >&2
+  exit 1
+fi
+
+case $(echo "${CONFIG_DIR}" | head -c 1) in
+  .) echo "CONFIG_DIR cannot start with a dot." >&2
+     exit 1
+     ;;
+  /) ;;
+  *) CONFIG_DIR="${WIREGUARD_DIR}/${CONFIG_DIR}"
+     ;;
+esac
+
+CONFIG_FILE="${CONFIG_DIR}.conf"
+
+LISTFILE=$(mktemp)
+TEMPFILE=$(mktemp)
+
+# find may fail, and the error will not be caught if the output goes into a pipe
+find "$CONFIG_DIR" -type f >"${LISTFILE}"
+
+# we don't expect these to fail
+grep -v -e '/\.' "${LISTFILE}" \
+  | sort \
+  | while IFS= read -r FRAGMENT; do
+    {
+      echo "# $(basename "${FRAGMENT}")"
+      cat "${FRAGMENT}"
+      echo
+    } >> "${TEMPFILE}"
+  done
+
+cat "${TEMPFILE}" >"${CONFIG_FILE}"
+
+rm "${LISTFILE}"
+rm "${TEMPFILE}"
+

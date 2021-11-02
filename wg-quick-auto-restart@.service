@@ -4,6 +4,6 @@ Description=Watch a WireGuard config fragment directory for changes and restarts
 
 [Service]
 Type=oneshot
-ExecStart=wg-dir %i
-ExecStart=systemctl restart wg-quick@%i.service
+ExecStart=/usr/bin/wg-dir %i
+ExecStart=/bin/systemctl restart wg-quick@%i.service
 

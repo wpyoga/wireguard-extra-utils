@@ -1,0 +1,9 @@
+[Unit]
+Description=Generates a WireGuard configuration file from its fragments and restarts wg-quick
+Description=Watch a WireGuard config fragment directory for changes and restarts wg-quick
+
+[Service]
+Type=oneshot
+ExecStart=wg-dir %i
+ExecStart=systemctl restart wg-quick@%i.service
+

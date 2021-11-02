@@ -1,0 +1,11 @@
+[Unit]
+Description=Watch a WireGuard config fragment directory for changes and restarts wg-quick
+
+[Path]
+DirectoryNotEmpty=/etc/wireguard/%i
+PathChanged=/etc/wireguard/%i
+Unit=wg-quick-auto-restart@%i.service
+
+[Install]
+WantedBy=paths.target
+

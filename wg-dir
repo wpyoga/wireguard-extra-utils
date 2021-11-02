@@ -31,7 +31,7 @@ EOF
 fi
 
 CONFIG_DIR=$(printf %s "$1" | tr -s /)
-CONFIG_DIR=${DIR%/}
+CONFIG_DIR=${CONFIG_DIR%/}
 
 if [ -z "${CONFIG_DIR}" ]; then
   echo "CONFIG_DIR cannot be an empty string." >&2

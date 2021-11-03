@@ -12,7 +12,7 @@ The executable `wg-dir` reads the fragments and creates `/etc/wireguard/my-mesh.
 
 ### wg-quick-auto-restart (systemd units)
 
-Watch the specified wireguard configuration directory for changes and restarts wg-quick. To add or remove a peer, just add or remove the peer configuration fragment inside the `/etc/wireguard/my-mesh/` directory, and the interface will be automatically reloaded.
+Watch `/etc/wireguard/my-mesh` for changes and restarts wg-quick. To add, remove, or modify a peer configuration, just add, remove, or modify a peer configuration fragment, and the interface will be automatically reloaded.
 
 This depends on `wg-dir`. The files `wg-quick-auto-restart@.path` and `wg-quick-auto-restart@.service` should be installed into `/lib/systemd/system`. It can be enabled with this command:
 
@@ -20,9 +20,15 @@ This depends on `wg-dir`. The files `wg-quick-auto-restart@.path` and `wg-quick-
 # systemctl enable --now wg-quick-auto-restart@my-mesh.path
 ```
 
+### wg-quick-dir (systemd service)
+
+Brings up `my-mesh` using the configuration inside `/etc/wireguard/my-mesh`. It does this by running `wg-dir` and then `wg-quick`. The systemd unit file itself is a modified version of `wg-quick@.service` of wireguard-tools.
+
 ## TODO
 
 Maybe check for invalid syntax before overwriting the config file.
+
+Get `wg-dir`'s features included in the official wireguard-tools project.
 
 ## License
 
